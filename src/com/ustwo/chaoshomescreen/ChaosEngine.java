@@ -102,20 +102,25 @@ public class ChaosEngine extends Thread implements Callback {
     public void run() {
         long millisNow;
         long millisPrev = System.currentTimeMillis();
+        int posX, posY;
         while (mIsRunning) {
             millisNow = System.currentTimeMillis();
             mWorld.step((millisNow - millisPrev) / 1000.0f, 8, 3);
             mWorld.clearForces();
+          
             Canvas canvas = mHolder.lockCanvas();
             canvas.drawColor(Color.DKGRAY);
             //mWallpaperDrawable.setBounds(0, 0, mScreenWidth, mScreenHeight);
             //mWallpaperDrawable.draw(canvas);
             for (ChaosIcon icon : mChaosIcons) {
+                posX = metersToPx(icon.getBody().getPosition().x);
+                posY = metersToPx(icon.getBody().getPosition().y);
                 canvas.save();
-                icon.getDrawable().setBounds(metersToPx(icon.getBody().getPosition().x) - ChaosIcon.ICON_SIZE/2, 
-                                             metersToPx(icon.getBody().getPosition().y) - ChaosIcon.ICON_SIZE/2, 
-                                             metersToPx(icon.getBody().getPosition().x) + ChaosIcon.ICON_SIZE/2, 
-                                             metersToPx(icon.getBody().getPosition().y) + ChaosIcon.ICON_SIZE/2);
+                icon.getDrawable().setBounds(posX - ChaosIcon.ICON_SIZE/2, 
+                                             posY - ChaosIcon.ICON_SIZE/2, 
+                                             posX + ChaosIcon.ICON_SIZE/2, 
+                                             posY + ChaosIcon.ICON_SIZE/2);
+                
                 canvas.rotate((float)(icon.getBody().getAngle() * 180.0f / Math.PI), 
                               metersToPx(icon.getBody().getPosition().x), 
                               metersToPx(icon.getBody().getPosition().y));
