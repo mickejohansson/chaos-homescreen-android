@@ -1,13 +1,16 @@
 package com.ustwo.chaoshomescreen;
 
 import java.util.List;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Canvas;
+
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -15,6 +18,7 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
+
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -32,6 +36,9 @@ public class ChaosEngine extends Thread implements Callback {
     private World mWorld;
     private Drawable mIconDrawable;
     private Drawable mIconDrawable2;
+    private Drawable mWallpaperDrawable;
+    private int mScreenWidth;
+    private int mScreenHeight;
     
     private int metersToPx(float worldMeters) {
        return (int)(worldMeters * 10);
@@ -48,8 +55,8 @@ public class ChaosEngine extends Thread implements Callback {
         Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
         DisplayMetrics displayMetrics = new DisplayMetrics();
         display.getRealMetrics(displayMetrics);
-        int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
+        mScreenWidth = displayMetrics.widthPixels;
+        mScreenHeight = displayMetrics.heightPixels;
   
         // Setup the world
         Vec2 gravity = new Vec2(0.0f, 9.82f);
@@ -58,15 +65,15 @@ public class ChaosEngine extends Thread implements Callback {
       
         // The ground
         BodyDef staticDef = new BodyDef();
-        staticDef.setPosition(new Vec2(pxToMeters(screenWidth / 2), pxToMeters(screenHeight) + 5.0f));
+        staticDef.setPosition(new Vec2(pxToMeters(mScreenWidth / 2), pxToMeters(mScreenHeight) + 5.0f));
         Body groundBody = mWorld.createBody(staticDef);
         PolygonShape groundShape = new PolygonShape();
-        groundShape.setAsBox(pxToMeters(screenWidth/2), 5.0f);
+        groundShape.setAsBox(pxToMeters(mScreenWidth/2), 5.0f);
         groundBody.createFixture(groundShape, 0.0f);
        
         // The icon 
         BodyDef iconBodyDef = new BodyDef();
-        iconBodyDef.setPosition(new Vec2(pxToMeters(screenWidth / 2), 0.0f));
+        iconBodyDef.setPosition(new Vec2(pxToMeters(mScreenWidth / 2), 0.0f));
         iconBodyDef.setType(BodyType.DYNAMIC);
         mIconBody = mWorld.createBody(iconBodyDef);
         PolygonShape iconShape = new PolygonShape();
@@ -79,7 +86,7 @@ public class ChaosEngine extends Thread implements Callback {
         mIconBody.createFixture(iconFixtureDef);
         
         // Another icon
-        iconBodyDef.setPosition(new Vec2(pxToMeters(screenWidth / 2 - 45), -20.0f));
+        iconBodyDef.setPosition(new Vec2(pxToMeters(mScreenWidth / 2 - 45), -20.0f));
         iconBodyDef.setType(BodyType.DYNAMIC);
         mIconBody2 = mWorld.createBody(iconBodyDef);
         mIconBody2.createFixture(iconFixtureDef);
@@ -90,6 +97,9 @@ public class ChaosEngine extends Thread implements Callback {
         List<ResolveInfo> appList = packageManager.queryIntentActivities(intent, 0);
         mIconDrawable = appList.get(0).loadIcon(context.getPackageManager());
         mIconDrawable2 = appList.get(1).loadIcon(context.getPackageManager());
+        
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
+        mWallpaperDrawable = wallpaperManager.getDrawable();
     }
         
     @Override
@@ -102,6 +112,8 @@ public class ChaosEngine extends Thread implements Callback {
             mWorld.clearForces();
             Canvas canvas = mHolder.lockCanvas();
             canvas.drawColor(Color.DKGRAY);
+            //mWallpaperDrawable.setBounds(0, 0, mScreenWidth, mScreenHeight);
+            //mWallpaperDrawable.draw(canvas);
             mIconDrawable.setBounds(metersToPx(mIconBody.getPosition().x) - 60, metersToPx(mIconBody.getPosition().y) - 60, metersToPx(mIconBody.getPosition().x) + 60, metersToPx(mIconBody.getPosition().y) + 60);
             mIconDrawable.draw(canvas);
             canvas.save();
