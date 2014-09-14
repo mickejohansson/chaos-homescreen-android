@@ -28,8 +28,10 @@ public class ChaosEngine extends Thread implements Callback {
     private boolean mIsRunning = false;
     private SurfaceHolder mHolder;
     private Body mIconBody;
+    private Body mIconBody2;
     private World mWorld;
     private Drawable mIconDrawable;
+    private Drawable mIconDrawable2;
     
     private int metersToPx(float worldMeters) {
        return (int)(worldMeters * 10);
@@ -75,12 +77,19 @@ public class ChaosEngine extends Thread implements Callback {
         iconFixtureDef.setFriction(0.1f);
         iconFixtureDef.setRestitution(0.2f);
         mIconBody.createFixture(iconFixtureDef);
+        
+        // Another icon
+        iconBodyDef.setPosition(new Vec2(pxToMeters(screenWidth / 2 - 45), -20.0f));
+        iconBodyDef.setType(BodyType.DYNAMIC);
+        mIconBody2 = mWorld.createBody(iconBodyDef);
+        mIconBody2.createFixture(iconFixtureDef);
        
         PackageManager packageManager = context.getPackageManager();
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> appList = packageManager.queryIntentActivities(intent, 0);
         mIconDrawable = appList.get(0).loadIcon(context.getPackageManager());
+        mIconDrawable2 = appList.get(1).loadIcon(context.getPackageManager());
     }
         
     @Override
@@ -95,6 +104,8 @@ public class ChaosEngine extends Thread implements Callback {
             canvas.drawColor(Color.DKGRAY);
             mIconDrawable.setBounds(metersToPx(mIconBody.getPosition().x) - 60, metersToPx(mIconBody.getPosition().y) - 60, metersToPx(mIconBody.getPosition().x) + 60, metersToPx(mIconBody.getPosition().y) + 60);
             mIconDrawable.draw(canvas);
+            mIconDrawable2.setBounds(metersToPx(mIconBody2.getPosition().x) - 60, metersToPx(mIconBody2.getPosition().y) - 60, metersToPx(mIconBody2.getPosition().x) + 60, metersToPx(mIconBody2.getPosition().y) + 60);
+            mIconDrawable2.draw(canvas);
             /*
             System.out.println("fps = " + 1000.0f / (millisNow - millisPrev));
             System.out.println("iconBody.x = " + mIconBody.getPosition().x);
