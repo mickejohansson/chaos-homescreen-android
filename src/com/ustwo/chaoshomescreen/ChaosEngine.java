@@ -3,7 +3,6 @@ package com.ustwo.chaoshomescreen;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.Context;
@@ -22,7 +21,6 @@ import org.jbox2d.dynamics.World;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.SurfaceHolder;
@@ -32,11 +30,7 @@ public class ChaosEngine extends Thread implements Callback {
 
     private boolean mIsRunning = false;
     private SurfaceHolder mHolder;
-    //private Body mIconBody;
-    //private Body mIconBody2;
     private World mWorld;
-    //private Drawable mIconDrawable;
-    //private Drawable mIconDrawable2;
     private Drawable mWallpaperDrawable;
     private int mScreenWidth;
     private int mScreenHeight;
@@ -63,7 +57,7 @@ public class ChaosEngine extends Thread implements Callback {
         // Setup the world
         Vec2 gravity = new Vec2(0.0f, 9.82f);
         mWorld = new World(gravity);
-        mWorld.setAllowSleep(false);
+        //mWorld.setAllowSleep(false);
       
         // The ground
         BodyDef staticDef = new BodyDef();
@@ -73,34 +67,10 @@ public class ChaosEngine extends Thread implements Callback {
         groundShape.setAsBox(pxToMeters(mScreenWidth/2), 5.0f);
         groundBody.createFixture(groundShape, 0.0f);
       
-        /*
-        // The icon 
-        BodyDef iconBodyDef = new BodyDef();
-        iconBodyDef.setPosition(new Vec2(pxToMeters(mScreenWidth / 2), 0.0f));
-        iconBodyDef.setType(BodyType.DYNAMIC);
-        mIconBody = mWorld.createBody(iconBodyDef);
-        PolygonShape iconShape = new PolygonShape();
-        iconShape.setAsBox(pxToMeters(120/2), pxToMeters(120/2));
-        FixtureDef iconFixtureDef = new FixtureDef();
-        iconFixtureDef.setShape(iconShape);
-        iconFixtureDef.setDensity(10.0f);
-        iconFixtureDef.setFriction(0.1f);
-        iconFixtureDef.setRestitution(0.2f);
-        mIconBody.createFixture(iconFixtureDef);
-        
-        // Another icon
-        iconBodyDef.setPosition(new Vec2(pxToMeters(mScreenWidth / 2 - 45), -20.0f));
-        iconBodyDef.setType(BodyType.DYNAMIC);
-        mIconBody2 = mWorld.createBody(iconBodyDef);
-        mIconBody2.createFixture(iconFixtureDef);
-        */
-       
         PackageManager packageManager = context.getPackageManager();
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> appList = packageManager.queryIntentActivities(intent, 0);
-        //mIconDrawable = appList.get(0).loadIcon(context.getPackageManager());
-        //mIconDrawable2 = appList.get(1).loadIcon(context.getPackageManager());
        
         BodyDef iconBodyDef = new BodyDef();
         iconBodyDef.setType(BodyType.DYNAMIC);
