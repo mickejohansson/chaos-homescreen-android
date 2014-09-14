@@ -104,13 +104,17 @@ public class ChaosEngine extends Thread implements Callback {
             canvas.drawColor(Color.DKGRAY);
             mIconDrawable.setBounds(metersToPx(mIconBody.getPosition().x) - 60, metersToPx(mIconBody.getPosition().y) - 60, metersToPx(mIconBody.getPosition().x) + 60, metersToPx(mIconBody.getPosition().y) + 60);
             mIconDrawable.draw(canvas);
+            canvas.save();
             mIconDrawable2.setBounds(metersToPx(mIconBody2.getPosition().x) - 60, metersToPx(mIconBody2.getPosition().y) - 60, metersToPx(mIconBody2.getPosition().x) + 60, metersToPx(mIconBody2.getPosition().y) + 60);
+            canvas.rotate((float)(mIconBody2.getAngle() * 180.0f / Math.PI), metersToPx(mIconBody2.getPosition().x), metersToPx(mIconBody2.getPosition().y));
             mIconDrawable2.draw(canvas);
+            canvas.restore();
             /*
             System.out.println("fps = " + 1000.0f / (millisNow - millisPrev));
             System.out.println("iconBody.x = " + mIconBody.getPosition().x);
-            */
             System.out.println("iconBody.y = " + mIconBody.getPosition().y);
+            */
+            System.out.println("iconBody2.angle = " + mIconBody2.getAngle());
             mHolder.unlockCanvasAndPost(canvas);
             
             millisPrev = millisNow;
