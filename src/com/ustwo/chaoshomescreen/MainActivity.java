@@ -4,23 +4,37 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.WallpaperManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SurfaceHolder;
+import android.view.SurfaceHolder.Callback;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 
 public class MainActivity extends Activity {
 
+    private ChaosSurfaceView mSurfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        mSurfaceView = new ChaosSurfaceView(this);
+        ChaosEngine chaosEngine = new ChaosEngine(mSurfaceView.getHolder(), this);
+        
+        setContentView(mSurfaceView);
+        
+        /*
         setContentView(R.layout.activity_main);
         
         // Set background image
@@ -49,8 +63,8 @@ public class MainActivity extends Activity {
         	bgLayout.addView(imageView);
         	nbrApps++;
         }
+        */
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

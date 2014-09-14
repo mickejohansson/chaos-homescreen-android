@@ -3,6 +3,7 @@
 	<name>ChaosHomescreen</name>
 	<comment></comment>
 	<projects>
+		<project>jbox2d-library</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -30,4 +31,11 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>jbox2d-library</name>
+			<type>2</type>
+			<location>/Users/mickejohansson/work/jbox2d/jbox2d-library</location>
+		</link>
+	</linkedResources>
 </projectDescription>
