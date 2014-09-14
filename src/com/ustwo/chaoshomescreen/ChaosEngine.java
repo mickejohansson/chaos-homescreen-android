@@ -56,10 +56,10 @@ public class ChaosEngine extends Thread implements Callback {
       
         // The ground
         BodyDef staticDef = new BodyDef();
-        staticDef.setPosition(new Vec2(pxToMeters(screenWidth / 2), pxToMeters(screenHeight/2)));
+        staticDef.setPosition(new Vec2(pxToMeters(screenWidth / 2), pxToMeters(screenHeight) + 5.0f));
         Body groundBody = mWorld.createBody(staticDef);
         PolygonShape groundShape = new PolygonShape();
-        groundShape.setAsBox(pxToMeters(screenWidth), 10.0f);
+        groundShape.setAsBox(pxToMeters(screenWidth/2), 5.0f);
         groundBody.createFixture(groundShape, 0.0f);
        
         // The icon 
@@ -93,13 +93,13 @@ public class ChaosEngine extends Thread implements Callback {
             mWorld.clearForces();
             Canvas canvas = mHolder.lockCanvas();
             canvas.drawColor(Color.DKGRAY);
-            mIconDrawable.setBounds(0, metersToPx(mIconBody.getPosition().y), 120, metersToPx(mIconBody.getPosition().y) + 120);
+            mIconDrawable.setBounds(metersToPx(mIconBody.getPosition().x) - 60, metersToPx(mIconBody.getPosition().y) - 60, metersToPx(mIconBody.getPosition().x) + 60, metersToPx(mIconBody.getPosition().y) + 60);
             mIconDrawable.draw(canvas);
             /*
             System.out.println("fps = " + 1000.0f / (millisNow - millisPrev));
             System.out.println("iconBody.x = " + mIconBody.getPosition().x);
-            System.out.println("iconBody.y = " + mIconBody.getPosition().y);
             */
+            System.out.println("iconBody.y = " + mIconBody.getPosition().y);
             mHolder.unlockCanvasAndPost(canvas);
             
             millisPrev = millisNow;
