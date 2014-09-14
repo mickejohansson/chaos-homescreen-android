@@ -1,5 +1,6 @@
 package com.ustwo.chaoshomescreen;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.TargetApi;
@@ -31,14 +32,15 @@ public class ChaosEngine extends Thread implements Callback {
 
     private boolean mIsRunning = false;
     private SurfaceHolder mHolder;
-    private Body mIconBody;
-    private Body mIconBody2;
+    //private Body mIconBody;
+    //private Body mIconBody2;
     private World mWorld;
-    private Drawable mIconDrawable;
-    private Drawable mIconDrawable2;
+    //private Drawable mIconDrawable;
+    //private Drawable mIconDrawable2;
     private Drawable mWallpaperDrawable;
     private int mScreenWidth;
     private int mScreenHeight;
+    private ArrayList<ChaosIcon> mChaosIcons;
     
     private int metersToPx(float worldMeters) {
        return (int)(worldMeters * 10);
@@ -70,7 +72,8 @@ public class ChaosEngine extends Thread implements Callback {
         PolygonShape groundShape = new PolygonShape();
         groundShape.setAsBox(pxToMeters(mScreenWidth/2), 5.0f);
         groundBody.createFixture(groundShape, 0.0f);
-       
+      
+        /*
         // The icon 
         BodyDef iconBodyDef = new BodyDef();
         iconBodyDef.setPosition(new Vec2(pxToMeters(mScreenWidth / 2), 0.0f));
@@ -90,13 +93,36 @@ public class ChaosEngine extends Thread implements Callback {
         iconBodyDef.setType(BodyType.DYNAMIC);
         mIconBody2 = mWorld.createBody(iconBodyDef);
         mIconBody2.createFixture(iconFixtureDef);
+        */
        
         PackageManager packageManager = context.getPackageManager();
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> appList = packageManager.queryIntentActivities(intent, 0);
-        mIconDrawable = appList.get(0).loadIcon(context.getPackageManager());
-        mIconDrawable2 = appList.get(1).loadIcon(context.getPackageManager());
+        //mIconDrawable = appList.get(0).loadIcon(context.getPackageManager());
+        //mIconDrawable2 = appList.get(1).loadIcon(context.getPackageManager());
+       
+        BodyDef iconBodyDef = new BodyDef();
+        iconBodyDef.setType(BodyType.DYNAMIC);
+        PolygonShape iconShape = new PolygonShape();
+        iconShape.setAsBox(pxToMeters(ChaosIcon.ICON_SIZE / 2), pxToMeters(ChaosIcon.ICON_SIZE / 2));
+        FixtureDef iconFixtureDef = new FixtureDef();
+        iconFixtureDef.setShape(iconShape);
+        iconFixtureDef.setDensity(10.0f);
+        iconFixtureDef.setFriction(0.1f);
+        iconFixtureDef.setRestitution(0.2f);
+
+        mChaosIcons = new ArrayList<ChaosIcon>();
+        for (int i=0; i<appList.size(); i++) {
+            ResolveInfo tempInfo = appList.get(i);
+            iconBodyDef.setPosition(new Vec2(pxToMeters(mScreenWidth / 2), 0.0f - i*pxToMeters(ChaosIcon.ICON_SIZE)));
+            Body body = mWorld.createBody(iconBodyDef);
+            body.createFixture(iconFixtureDef);
+            ChaosIcon tempIcon = new ChaosIcon(body, tempInfo.loadIcon(context.getPackageManager()));
+            
+            mChaosIcons.add(tempIcon);
+            i++;
+        }
         
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
         mWallpaperDrawable = wallpaperManager.getDrawable();
@@ -114,19 +140,24 @@ public class ChaosEngine extends Thread implements Callback {
             canvas.drawColor(Color.DKGRAY);
             //mWallpaperDrawable.setBounds(0, 0, mScreenWidth, mScreenHeight);
             //mWallpaperDrawable.draw(canvas);
-            mIconDrawable.setBounds(metersToPx(mIconBody.getPosition().x) - 60, metersToPx(mIconBody.getPosition().y) - 60, metersToPx(mIconBody.getPosition().x) + 60, metersToPx(mIconBody.getPosition().y) + 60);
-            mIconDrawable.draw(canvas);
-            canvas.save();
-            mIconDrawable2.setBounds(metersToPx(mIconBody2.getPosition().x) - 60, metersToPx(mIconBody2.getPosition().y) - 60, metersToPx(mIconBody2.getPosition().x) + 60, metersToPx(mIconBody2.getPosition().y) + 60);
-            canvas.rotate((float)(mIconBody2.getAngle() * 180.0f / Math.PI), metersToPx(mIconBody2.getPosition().x), metersToPx(mIconBody2.getPosition().y));
-            mIconDrawable2.draw(canvas);
-            canvas.restore();
+            for (ChaosIcon icon : mChaosIcons) {
+                canvas.save();
+                icon.getDrawable().setBounds(metersToPx(icon.getBody().getPosition().x) - ChaosIcon.ICON_SIZE/2, 
+                                             metersToPx(icon.getBody().getPosition().y) - ChaosIcon.ICON_SIZE/2, 
+                                             metersToPx(icon.getBody().getPosition().x) + ChaosIcon.ICON_SIZE/2, 
+                                             metersToPx(icon.getBody().getPosition().y) + ChaosIcon.ICON_SIZE/2);
+                canvas.rotate((float)(icon.getBody().getAngle() * 180.0f / Math.PI), 
+                              metersToPx(icon.getBody().getPosition().x), 
+                              metersToPx(icon.getBody().getPosition().y));
+                icon.getDrawable().draw(canvas);
+                canvas.restore();
+            }
             /*
             System.out.println("fps = " + 1000.0f / (millisNow - millisPrev));
             System.out.println("iconBody.x = " + mIconBody.getPosition().x);
             System.out.println("iconBody.y = " + mIconBody.getPosition().y);
-            */
             System.out.println("iconBody2.angle = " + mIconBody2.getAngle());
+            */
             mHolder.unlockCanvasAndPost(canvas);
             
             millisPrev = millisNow;
