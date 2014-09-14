@@ -85,7 +85,7 @@ public class ChaosEngine extends Thread implements Callback {
         mChaosIcons = new ArrayList<ChaosIcon>();
         for (int i=0; i<appList.size(); i++) {
             ResolveInfo tempInfo = appList.get(i);
-            iconBodyDef.setPosition(new Vec2(pxToMeters(mScreenWidth / 2), 0.0f - i*pxToMeters(ChaosIcon.ICON_SIZE)));
+            iconBodyDef.setPosition(new Vec2(pxToMeters(mScreenWidth / 2) - 5.0f + 10.0f * (float)Math.random(), 0.0f - i*pxToMeters(ChaosIcon.ICON_SIZE)));
             Body body = mWorld.createBody(iconBodyDef);
             body.createFixture(iconFixtureDef);
             ChaosIcon tempIcon = new ChaosIcon(body, tempInfo.loadIcon(context.getPackageManager()));
@@ -109,30 +109,32 @@ public class ChaosEngine extends Thread implements Callback {
             mWorld.clearForces();
           
             Canvas canvas = mHolder.lockCanvas();
-            canvas.drawColor(Color.DKGRAY);
-            //mWallpaperDrawable.setBounds(0, 0, mScreenWidth, mScreenHeight);
-            //mWallpaperDrawable.draw(canvas);
-            for (ChaosIcon icon : mChaosIcons) {
-                posX = metersToPx(icon.getBody().getPosition().x);
-                posY = metersToPx(icon.getBody().getPosition().y);
-                canvas.save();
-                icon.getDrawable().setBounds(posX - ChaosIcon.ICON_SIZE/2, 
-                                             posY - ChaosIcon.ICON_SIZE/2, 
-                                             posX + ChaosIcon.ICON_SIZE/2, 
-                                             posY + ChaosIcon.ICON_SIZE/2);
-                
-                canvas.rotate((float)(icon.getBody().getAngle() * 180.0f / Math.PI), 
-                              metersToPx(icon.getBody().getPosition().x), 
-                              metersToPx(icon.getBody().getPosition().y));
-                icon.getDrawable().draw(canvas);
-                canvas.restore();
-            }
-            /*
+            synchronized(mHolder) {
+                canvas.drawColor(Color.DKGRAY);
+                //mWallpaperDrawable.setBounds(0, 0, mScreenWidth, mScreenHeight);
+                //mWallpaperDrawable.draw(canvas);
+                for (ChaosIcon icon : mChaosIcons) {
+                    posX = metersToPx(icon.getBody().getPosition().x);
+                    posY = metersToPx(icon.getBody().getPosition().y);
+                    canvas.save();
+                    icon.getDrawable().setBounds(posX - ChaosIcon.ICON_SIZE/2, 
+                            posY - ChaosIcon.ICON_SIZE/2, 
+                            posX + ChaosIcon.ICON_SIZE/2, 
+                            posY + ChaosIcon.ICON_SIZE/2);
+
+                    canvas.rotate((float)(icon.getBody().getAngle() * 180.0f / Math.PI), 
+                            metersToPx(icon.getBody().getPosition().x), 
+                            metersToPx(icon.getBody().getPosition().y));
+                    icon.getDrawable().draw(canvas);
+                    canvas.restore();
+                }
+                /*
             System.out.println("fps = " + 1000.0f / (millisNow - millisPrev));
             System.out.println("iconBody.x = " + mIconBody.getPosition().x);
             System.out.println("iconBody.y = " + mIconBody.getPosition().y);
             System.out.println("iconBody2.angle = " + mIconBody2.getAngle());
-            */
+                 */
+            }
             mHolder.unlockCanvasAndPost(canvas);
             
             millisPrev = millisNow;
